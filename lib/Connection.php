@@ -292,7 +292,7 @@ abstract class Connection
 	public function query($sql, &$values=array())
 	{
 		if ($this->logging)
-			$this->logger->log($sql);
+			$this->logger->log($sql, $values);
 
 		$this->last_query = $sql;
 
@@ -460,6 +460,7 @@ abstract class Connection
 	 */
 	public function string_to_datetime($string)
 	{
+		return $string;
 		$date = date_create($string);
 		$errors = \DateTime::getLastErrors();
 

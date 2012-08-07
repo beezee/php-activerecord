@@ -381,7 +381,12 @@ class SQLBuilder
 			$sql .= " ORDER BY $this->order";
 
 		if ($this->limit || $this->offset)
-			$sql = $this->connection->limit($sql,$this->offset,$this->limit);
+		{
+			//$sql = $this->connection->limit($sql,$this->offset,$this->limit);
+			$o = ($this->offset) ? $this->offset : '0';
+			$l = ($this->limit) ? $this->limit : '10';
+			 $sql .= " LIMIT $o, $l";
+		}
 
 		return $sql;
 	}
