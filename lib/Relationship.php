@@ -132,7 +132,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		$options = $this->options;
 		$inflector = Inflector::instance();
 		$query_key = $query_keys[0];
-		$model_values_key = (isset($this->options['primary_key'])) ? $this->options['primary_key'] : $model_values_keys[0];
+		$model_values_key = $model_values_keys[0];
 
 		foreach ($attributes as $column => $value)
 			$values[] = $value[$inflector->variablize($model_values_key)];
@@ -178,9 +178,6 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		$options = $this->unset_non_finder_options($options);
 
 		$class = $this->class_name;
-		if (isset($this->options['conditions'])) Utils::add_condition($options['conditions'], $this->options['conditions']);
-		if (isset($this->options['limit'])) $options['limit'] = $this->options['limit'];
-		if (isset($this->options['order'])) $options['order'] = $this->options['order'];
 
 		$related_models = $class::find('all', $options);
 		$used_models = array();
@@ -194,16 +191,16 @@ abstract class AbstractRelationship implements InterfaceRelationship
 
 			foreach ($related_models as $related)
 			{
-				if ($related->read_attribute($query_key) == $key_to_match)
+				if ($related->$query_key == $key_to_match)
 				{
-					/*$hash = spl_object_hash($related);
+					$hash = spl_object_hash($related);
 
 					if (in_array($hash, $used_models))
 						$model->set_relationship_from_eager_load(clone($related), $this->attribute_name);
-					else*/
+					else
 						$model->set_relationship_from_eager_load($related, $this->attribute_name);
 
-					///$used_models[] = $hash;
+					$used_models[] = $hash;
 					$matches++;
 				}
 			}

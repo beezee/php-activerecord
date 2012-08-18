@@ -517,6 +517,7 @@ class Model
 					return $null;
 			}
 		}
+
 		throw new UndefinedPropertyException(get_called_class(),$name);
 	}
 
@@ -1462,20 +1463,6 @@ class Model
 	{
 		return call_user_func_array('static::find',array_merge(array('last'),func_get_args()));
 	}
-        
-        public static function merge_model_conditions($conditions)
-       {
-            $class = get_called_class();
-            if (!is_array($conditions)) return $class::conditions();
-            $condition_string = array_shift($conditions);
-            $static_conditions = $class::conditions();
-            $static_condition_string = array_shift($static_conditions);
-            $r = array();
-            $r[] = $static_condition_string.' AND '.$condition_string;
-            foreach($static_conditions as $c) $r[] = $c;
-            foreach($conditions as $c) $r[] = $c;
-            return $r;
-       }
 
 	/**
 	 * Find records in the database.
@@ -1539,16 +1526,6 @@ class Model
 			throw new RecordNotFound("Couldn't find $class without an ID");
 
 		$args = func_get_args();
-                if (isset($args[1]) and is_array($args))
-                {
-                    if (method_exists($class, 'conditions') and
-                        is_callable(array($class, 'conditions')))
-                            $args[1]['conditions'] = self::merge_model_conditions($args[1]['conditions']);
-                    if (method_exists($class, 'joins') and
-                    is_callable(array($class, 'joins')))
-                    $args[1]['joins'] = (isset($args[1]['joins'])) ?
-                        $class::joins().$args[1]['joins'] : $class::joins();
-                }
 		$options = static::extract_and_validate_options($args);
 		$num_args = count($args);
 		$single = true;

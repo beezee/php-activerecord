@@ -16,7 +16,6 @@ namespace ActiveRecord;
 class Table
 {
 	private static $cache = array();
-	private $class_name;
 
 	public $class;
 	public $conn;
@@ -77,7 +76,7 @@ class Table
 	public function __construct($class_name)
 	{
 		$this->class = Reflections::instance()->add($class_name)->get($class_name);
-		$this->class_name = $class_name;
+
 		$this->reestablish_connection(false);
 		$this->set_table_name();
 		$this->get_meta_data();
@@ -255,7 +254,7 @@ class Table
 			// nested include
 			if (is_array($name))
 			{
-				$nested_includes = count($name) > 0 ? $name : $name[0];
+				$nested_includes = count($name) > 1 ? $name : $name[0];
 				$name = $index;
 			}
 			else
@@ -430,7 +429,6 @@ class Table
 
 	private function set_table_name()
 	{
-		$class_name = $this->class_name;
 		if (($table = $this->class->getStaticPropertyValue('table',null)) || ($table = $this->class->getStaticPropertyValue('table_name',null)))
 			$this->table = $table;
 		else
@@ -442,7 +440,7 @@ class Table
 			$parts = explode('\\',$this->table);
 			$this->table = $parts[count($parts)-1];
 		}
-		if (method_exists($class_name, 'tablename')) $this->table = $class_name::tablename();
+
 		if(($db = $this->class->getStaticPropertyValue('db',null)) || ($db = $this->class->getStaticPropertyValue('db_name',null)))
 			$this->db_name = $db;
 	}
